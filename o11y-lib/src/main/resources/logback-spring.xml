@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <fieldName>timestamp</fieldName>
+                    <pattern>yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</pattern>
+                    <timeZone>UTC</timeZone>
+                </timestamp>
+
+                <logLevel>
+                    <fieldName>level</fieldName>
+                </logLevel>
+
+                <message>
+                    <fieldName>message</fieldName>
+                </message>
+
+                <arguments/>
+
+                <threadName>
+                    <fieldName>thread</fieldName>
+                </threadName>
+
+                <loggerName>
+                    <fieldName>logger</fieldName>
+                </loggerName>
+
+                <pattern>
+                    <pattern>
+                        {
+                            "spanContext": {
+                                "traceId": "%X{traceId:-}",
+                                "spanId": "%X{spanId:-}",
+                                "traceFlags": "%X{traceFlags:-}"
+                            }
+                        }
+                    </pattern>
+                    <omitEmptyFields>true</omitEmptyFields>
+                </pattern>
+
+                <pattern>
+                    <pattern>
+                        {
+                            "attributes": {
+                                "service.name": "${service.name:-}",
+                                "environment": "${environment:-}",
+                                "system": "${system:-}"
+                            }
+                        }
+                    </pattern>
+                    <omitEmptyFields>true</omitEmptyFields>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>

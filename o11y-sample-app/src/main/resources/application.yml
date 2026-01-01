@@ -1,0 +1,12 @@
+﻿spring:
+  application:
+    name: sample-service=
+
+server:
+  port: 8081
+
+
+logging:
+  level:
+    root: INFO                     # Global default level
+    org.springframework.web: INFO  # Third-party library level

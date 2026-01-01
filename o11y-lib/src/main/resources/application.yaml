@@ -1,0 +1,30 @@
+# needed for o11y library
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+    tracing:
+      endpoint: http://localhost:4317 # override it with env
+      transport: grpc
+  tracing:
+    sampling:
+      probability: 1.0
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+# Tracing Batch Settings
+otel:
+  bsp:
+    export:
+      timeout: 3000        # Max time for a single export (ms)
+    schedule:
+      delay: 1000           # Interval between two export attempts (ms)
+    max:
+      queue:
+        size: 2048          # Max spans in queue before dropping (default 2048)
+      export:
+        batch:
+          size: 512         # Max spans per batch (default 512)
