@@ -16,3 +16,9 @@
     - Format the timestamp format into `yyyy-MM-dd'T'HH:mm:ss.SSS'Z'`
     - Automatically injects `SpanContext` (TraceID, SpanID) into every log entry.
     - Automatically injects  `attributes` (service.name, environment, system) into every log entry.
+
+## Required ENV
+- `service.name` - The name of the service itself inside the system 
+- `environment` - DRILL \ LIVE \ GLOBAL
+- `system` - The name of the system, like: UserManagement
+- `MANAGEMENT_OTLP_TRACING_ENDPOINT` - Alloy endpoint

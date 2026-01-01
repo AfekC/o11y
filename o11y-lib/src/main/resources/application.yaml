@@ -5,7 +5,7 @@ management:
       export:
         enabled: false
     tracing:
-      endpoint: http://localhost:4317 # override it with env
+#      endpoint: http://localhost:4317 # override it with env
       transport: grpc
   tracing:
     sampling:
