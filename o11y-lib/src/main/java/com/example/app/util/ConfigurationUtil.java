@@ -1,6 +1,6 @@
 package com.example.app.util;
 
-import io.micrometer.common.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.search.RequiredSearch;

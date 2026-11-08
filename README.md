@@ -21,4 +21,8 @@
 - `service.name` - The name of the service itself inside the system 
 - `environment` - DRILL \ LIVE \ GLOBAL
 - `system` - The name of the system, like: UserManagement
-- `MANAGEMENT_OTLP_TRACING_ENDPOINT` - Alloy endpoint
+- `MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT` - Alloy endpoint (renamed from `MANAGEMENT_OTLP_TRACING_ENDPOINT` in Spring Boot 4)
+
+## Requirements
+- Java 25
+- Spring Boot 4.1

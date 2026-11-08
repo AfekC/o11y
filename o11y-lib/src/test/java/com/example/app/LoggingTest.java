@@ -6,9 +6,8 @@ import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.OutputStreamAppender;
 import ch.qos.logback.core.encoder.Encoder;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -63,35 +62,35 @@ class LoggingTest {
     }
 
     @Test
-    void logsInJsonFormatWithCorrectFields() throws JsonProcessingException {
+    void logsInJsonFormatWithCorrectFields() {
         MDC.put("traceId", "aaaa");
         MDC.put("spanId", "bbbb");
 
         logger.info("hello", kv("asdasd", "asdasd"));
 
         String jsonLine = out.toString(StandardCharsets.UTF_8);
-        JsonNode json = new ObjectMapper().readTree(jsonLine);
+        JsonNode json = JsonMapper.shared().readTree(jsonLine);
 
-        assertThat(json.get("timestamp").asText()).isNotEmpty();
-        assertThat(json.get("level").asText()).isEqualTo("INFO");
-        assertThat(json.get("attributes").get("system").asText()).isEqualTo("test-system");
-        assertThat(json.get("attributes").get("service.name").asText()).isEqualTo("test-service");
-        assertThat(json.get("attributes").get("environment").asText()).isEqualTo("test-env");
-        assertThat(json.get("message").asText()).isEqualTo("hello");
-        assertThat(json.get("asdasd").asText()).isEqualTo("asdasd");
-        assertThat(json.get("spanContext").get("traceId").asText()).isEqualTo("aaaa");
-        assertThat(json.get("spanContext").get("spanId").asText()).isEqualTo("bbbb");
+        assertThat(json.get("timestamp").asString()).isNotEmpty();
+        assertThat(json.get("level").asString()).isEqualTo("INFO");
+        assertThat(json.get("attributes").get("system").asString()).isEqualTo("test-system");
+        assertThat(json.get("attributes").get("service.name").asString()).isEqualTo("test-service");
+        assertThat(json.get("attributes").get("environment").asString()).isEqualTo("test-env");
+        assertThat(json.get("message").asString()).isEqualTo("hello");
+        assertThat(json.get("asdasd").asString()).isEqualTo("asdasd");
+        assertThat(json.get("spanContext").get("traceId").asString()).isEqualTo("aaaa");
+        assertThat(json.get("spanContext").get("spanId").asString()).isEqualTo("bbbb");
     }
 
     @Test
-    void checkTimestampFormat() throws JsonProcessingException {
+    void checkTimestampFormat() {
         logger.info("hello");
 
         String jsonLine = out.toString(StandardCharsets.UTF_8);
-        JsonNode json = new ObjectMapper().readTree(jsonLine);
+        JsonNode json = JsonMapper.shared().readTree(jsonLine);
 
 
-        String timestamp = json.get("timestamp").asText();
+        String timestamp = json.get("timestamp").asString();
         ZonedDateTime z =  ZonedDateTime.parse(timestamp);
 
         assertThat(timestamp).endsWith("Z");
@@ -99,16 +98,16 @@ class LoggingTest {
     }
 
     @Test
-    void logsWithSpanAnnotation() throws JsonProcessingException {
+    void logsWithSpanAnnotation() {
         testService.spanFunc("log in span", logger);
 
         String jsonLine = out.toString(StandardCharsets.UTF_8);
-        JsonNode json = new ObjectMapper().readTree(jsonLine);
+        JsonNode json = JsonMapper.shared().readTree(jsonLine);
 
-        assertThat(json.get("message").asText()).isEqualTo("log in span");
+        assertThat(json.get("message").asString()).isEqualTo("log in span");
 
-        assertThat(json.get("spanContext").get("traceId").asText()).isNotNull();
-        assertThat(json.get("spanContext").get("spanId").asText()).isNotNull();
+        assertThat(json.get("spanContext").get("traceId").asString()).isNotNull();
+        assertThat(json.get("spanContext").get("spanId").asString()).isNotNull();
     }
 
 }

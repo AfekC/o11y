@@ -1,12 +1,17 @@
-# needed for o11y library
+# o11y library defaults. Loaded by O11yDefaultsEnvironmentPostProcessor as the lowest-precedence
+# property source: the app's own application.yaml / env vars override any of these keys.
+# (Not named application.yaml: an app's own application.yaml would hide it on the classpath.)
 management:
   otlp:
     metrics:
       export:
         enabled: false
+  opentelemetry:
     tracing:
-#      endpoint: http://localhost:4317 # override it with env
-      transport: grpc
+      export:
+        otlp:
+#          endpoint: http://localhost:4317 # override it with env MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT
+          transport: grpc
   tracing:
     sampling:
       probability: 1.0

@@ -1,0 +1,2 @@
+org.springframework.boot.EnvironmentPostProcessor=\
+com.example.app.O11yDefaultsEnvironmentPostProcessor
