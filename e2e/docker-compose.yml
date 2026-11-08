@@ -1,0 +1,56 @@
+# Local telemetry stack for manual e2e testing of o11y-sample-app.
+#
+#   sample app (host) --OTLP gRPC :4317--> Alloy --OTLP gRPC--> Tempo <-- Grafana (:3000)
+#
+# Usage:  docker compose -f e2e/docker-compose.yml up -d
+# See e2e/README.md for how to run the sample app against it.
+
+name: o11y-e2e
+
+services:
+  tempo:
+    image: grafana/tempo:3.1.1
+    command: ["-target=all", "-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./tempo/tempo.yaml:/etc/tempo.yaml:ro
+      - tempo-data:/var/tempo
+    ports:
+      - "3200:3200"   # Tempo HTTP API (query / readiness: http://localhost:3200/ready)
+    # No healthcheck: the Tempo 3 image is distroless (no shell / wget).
+    restart: unless-stopped
+
+  alloy:
+    image: grafana/alloy:v1.21.3
+    command:
+      - run
+      - /etc/alloy/config.alloy
+      - --storage.path=/var/lib/alloy/data
+      - --server.http.listen-addr=0.0.0.0:12345
+    volumes:
+      - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
+    environment:
+      TEMPO_OTLP_ENDPOINT: tempo:4317
+    ports:
+      - "4317:4317"   # OTLP gRPC  <- the sample app sends spans here
+      - "4318:4318"   # OTLP HTTP
+      - "12345:12345" # Alloy UI (pipeline graph + live debugging)
+    depends_on:
+      - tempo
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:13.3.0
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - tempo
+    restart: unless-stopped
+
+volumes:
+  tempo-data:
